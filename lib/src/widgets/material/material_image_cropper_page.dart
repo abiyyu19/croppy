@@ -10,6 +10,7 @@ class MaterialImageCropperPage extends StatelessWidget {
     this.gesturePadding = 16.0,
     this.heroTag,
     this.themeData,
+    this.isDialog = false,
   });
 
   final CroppableImageController controller;
@@ -17,10 +18,12 @@ class MaterialImageCropperPage extends StatelessWidget {
   final Object? heroTag;
   final bool shouldPopAfterCrop;
   final ThemeData? themeData;
+  final bool isDialog;
 
   @override
   Widget build(BuildContext context) {
     final theme = themeData ?? generateMaterialImageCropperTheme(context);
+    final l10n = CroppyLocalizations.of(context)!;
 
     return Theme(
       data: theme,
@@ -38,6 +41,37 @@ class MaterialImageCropperPage extends StatelessWidget {
           builder: (context, overlayOpacityAnimation) {
             return Scaffold(
               backgroundColor: theme.scaffoldBackgroundColor,
+              appBar: AppBar(
+                backgroundColor: Colors.white,
+                title: Text(
+                  l10n.title,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                  ),
+                ),
+                automaticallyImplyLeading: false,
+                centerTitle: isDialog ? true : false,
+                actions: [
+                  if (isDialog)
+                    InkWell(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        margin: const EdgeInsets.only(right: 24),
+                        decoration: const BoxDecoration(
+                          color: Colors.grey,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
               body: SafeArea(
                 child: Column(
                   children: [
@@ -59,27 +93,35 @@ class MaterialImageCropperPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    RepaintBoundary(
-                      child: AnimatedBuilder(
-                        animation: overlayOpacityAnimation,
-                        builder: (context, _) => Opacity(
-                          opacity: overlayOpacityAnimation.value,
-                          child: MaterialImageCropperToolbar(
-                            controller: controller,
-                          ),
-                        ),
-                      ),
+                    MaterialImageCropperToolbar(
+                      controller: controller,
                     ),
-                    AnimatedBuilder(
-                      animation: overlayOpacityAnimation,
-                      builder: (context, _) => Opacity(
-                        opacity: overlayOpacityAnimation.value,
-                        child: MaterialImageCropperBottomAppBar(
-                          controller: controller,
-                          shouldPopAfterCrop: shouldPopAfterCrop,
-                        ),
-                      ),
+                    MaterialImageCropperBottomAppBar(
+                      controller: controller,
+                      shouldPopAfterCrop: shouldPopAfterCrop,
                     ),
+
+                    // RepaintBoundary(
+                    //   child: AnimatedBuilder(
+                    //     animation: overlayOpacityAnimation,
+                    //     builder: (context, _) => Opacity(
+                    //       opacity: overlayOpacityAnimation.value,
+                    //       child: MaterialImageCropperToolbar(
+                    //         controller: controller,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // AnimatedBuilder(
+                    //   animation: overlayOpacityAnimation,
+                    //   builder: (context, _) => Opacity(
+                    //     opacity: overlayOpacityAnimation.value,
+                    //     child: MaterialImageCropperBottomAppBar(
+                    //       controller: controller,
+                    //       shouldPopAfterCrop: shouldPopAfterCrop,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
