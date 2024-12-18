@@ -4,6 +4,9 @@ class CroppyLocalizationsVi extends CroppyLocalizations {
   CroppyLocalizationsVi() : super('vi');
 
   @override
+  String get title => 'Chỉnh sửa hình ảnh';
+
+  @override
   String get cancelLabel => 'Huỷ';
 
   @override

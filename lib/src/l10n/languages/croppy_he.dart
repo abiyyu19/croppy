@@ -4,6 +4,9 @@ class CroppyLocalizationsHe extends CroppyLocalizations {
   CroppyLocalizationsHe() : super('he');
 
   @override
+  String get title => 'ערוך תמונה';
+
+  @override
   String get cancelLabel => 'ביטול';
 
   @override

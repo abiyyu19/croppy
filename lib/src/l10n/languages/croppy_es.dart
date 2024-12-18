@@ -4,6 +4,8 @@ class CroppyLocalizationsEs extends CroppyLocalizations {
   CroppyLocalizationsEs() : super('es');
 
   @override
+  String get title => 'Editar imagen';
+  @override
   String get cancelLabel => 'Cancelar';
 
   @override

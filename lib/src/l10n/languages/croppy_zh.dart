@@ -4,6 +4,9 @@ class CroppyLocalizationsZh extends CroppyLocalizations {
   CroppyLocalizationsZh() : super('zh');
 
   @override
+  String get title => '编辑图片';
+
+  @override
   String get cancelLabel => '取消';
 
   @override

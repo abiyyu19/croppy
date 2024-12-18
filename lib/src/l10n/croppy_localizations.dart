@@ -31,6 +31,7 @@ abstract class CroppyLocalizations {
     Locale('he'),
     Locale('zh'),
     Locale('de'),
+    Locale('id'),
   ];
 
   /// Defaults to °
@@ -40,6 +41,9 @@ abstract class CroppyLocalizations {
   String getRoundedDegrees(double degrees) {
     return '${degrees.round()}$degreeSignCharacter';
   }
+
+  /// en: "Edit Image"
+  String get title;
 
   /// en: "Reset"
   String get materialResetLabel;

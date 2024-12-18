@@ -4,6 +4,9 @@ class CroppyLocalizationsRu extends CroppyLocalizations {
   CroppyLocalizationsRu() : super('ru');
 
   @override
+  String get title => 'Редактировать изображение';
+
+  @override
   String get cancelLabel => 'Отмена';
 
   @override
