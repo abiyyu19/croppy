@@ -12,8 +12,9 @@ class MaterialImageCropperToolbar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = CroppyLocalizations.of(context)!;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      decoration: const BoxDecoration(color: Colors.white),
       child: Column(
         children: [
           if (controller.isTransformationEnabled(Transformation.rotateZ))
@@ -74,6 +75,7 @@ class MaterialImageCropperToolbar extends StatelessWidget {
                               isSelected: clampAngle(rotationZ) > epsilon,
                               icon: const Icon(
                                 Icons.rotate_90_degrees_ccw_rounded,
+                                color: Colors.black,
                               ),
                             ),
                           ),
@@ -113,14 +115,16 @@ class MaterialImageCropperToolbar extends StatelessWidget {
                     ),
                     child: TextButton(
                       onPressed: () => controller.reset(),
-                      child: Text(l10n.materialResetLabel),
+                      child: Text(
+                        l10n.materialResetLabel,
+                        style: const TextStyle(fontSize: 12),
+                      ),
                     ),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8.0),
         ],
       ),
     );
