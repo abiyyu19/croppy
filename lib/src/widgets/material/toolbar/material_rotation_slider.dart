@@ -100,16 +100,17 @@ class _MaterialRotationSliderState extends State<MaterialRotationSlider> {
                       child: Text(
                         l10n.getRoundedDegrees(rotationZ * 180 / pi),
                         style: labelStyle?.copyWith(
-                          color: value.abs() > epsilon
-                              ? theme.colorScheme.primary
-                              : null,
+                          color: theme.colorScheme.primary,
+                          //  value.abs() > epsilon
+                          // ? theme.colorScheme.primary
+                          // : null,
                         ),
                       ),
                     ),
                     const SizedBox(height: 4.0),
                     SizedBox(
                       width: _width,
-                      height: 16.0,
+                      height: 24.0,
                       child: CustomPaint(
                         painter: _MaterialRotationSliderPainter(
                           value: value,
@@ -146,7 +147,8 @@ class _MaterialRotationSliderPainter extends CustomPainter {
     final dividerPaint = Paint()
       ..color = baseColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+      ..strokeWidth = 3.0
+      ..strokeCap = StrokeCap.round;
 
     final center = size.center(Offset(-size.width / 2, 0.0) * value);
 
@@ -154,7 +156,7 @@ class _MaterialRotationSliderPainter extends CustomPainter {
       if (i % 2 != 0) continue;
       if (((i / 45) - value).abs() < 1 / 135) continue;
 
-      final isHighlighted = i % 20 == 0;
+      // final isHighlighted = i % 20 == 0;
       final x = i * (size.width / 45) / 2;
       final _paint = dividerPaint;
 
@@ -162,31 +164,33 @@ class _MaterialRotationSliderPainter extends CustomPainter {
       final centerDiff = ((size.width / 2) - absoluteX).abs();
 
       var opacity = 1.0 - (centerDiff.abs() / (size.width / 2)).clamp(0, 1);
-      opacity = pow(opacity, 0.35).toDouble();
+      opacity = pow(opacity, 0.7).toDouble();
 
-      if (!isHighlighted) {
-        opacity *= 0.5;
-      }
+      // if (!isHighlighted) {
+      //   opacity *= 0.5;
+      // }
 
-      final markValue = i / 45;
-      late final bool isInValueRange;
+      // final markValue = i / 45;
+      // late final bool isInValueRange;
 
-      if (markValue == 0 && value.abs() > epsilon) {
-        isInValueRange = true;
-      } else if (value < 0 && markValue < 0 && value < markValue) {
-        isInValueRange = true;
-      } else if (value > 0 && markValue > 0 && value > markValue) {
-        isInValueRange = true;
-      } else {
-        isInValueRange = false;
-      }
+      // if (markValue == 0 && value.abs() > epsilon) {
+      //   isInValueRange = true;
+      // } else if (value < 0 && markValue < 0 && value < markValue) {
+      //   isInValueRange = true;
+      // } else if (value > 0 && markValue > 0 && value > markValue) {
+      //   isInValueRange = true;
+      // } else {
+      //   isInValueRange = false;
+      // }
 
-      final color = isInValueRange ? primaryColor : baseColor;
+      final color = baseColor;
+      //  isInValueRange ? primaryColor : baseColor;
 
       final paint = Paint()
         ..color = color.withOpacity(color.opacity * opacity)
         ..style = _paint.style
-        ..strokeWidth = _paint.strokeWidth;
+        ..strokeWidth = _paint.strokeWidth
+        ..strokeCap = _paint.strokeCap;
 
       canvas.drawLine(
         Offset(center.dx + x, size.height / 3),
@@ -195,13 +199,20 @@ class _MaterialRotationSliderPainter extends CustomPainter {
       );
     }
 
+    /// BATANG PENANDA POSISI
     canvas.drawLine(
       Offset(size.center(Offset.zero).dx, 0),
       Offset(size.center(Offset.zero).dx, size.height),
       Paint()
-        ..color = value.abs() > epsilon ? primaryColor : baseColor
+        ..color = primaryColor
+
+        /// ini dipake kalo mau warna batang penanda posisi nya
+        /// berubah ketika ada pergerakan
+        //  value.abs() > epsilon ? primaryColor : baseColor
+
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.0,
+        ..strokeWidth = 3.0
+        ..strokeCap = StrokeCap.round,
     );
   }
 
