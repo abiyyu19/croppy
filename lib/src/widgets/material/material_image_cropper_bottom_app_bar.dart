@@ -18,14 +18,15 @@ class MaterialImageCropperBottomAppBar extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           top: Divider.createBorderSide(context),
         ),
       ),
       padding: const EdgeInsets.only(
-        top: 8.0,
-        left: 16.0,
-        right: 16.0,
+        top: 16.0,
+        left: 24.0,
+        right: 24.0,
       ),
       child: SafeArea(
         top: false,
@@ -33,30 +34,59 @@ class MaterialImageCropperBottomAppBar extends StatelessWidget {
         minimum: const EdgeInsets.only(bottom: 16.0),
         child: Row(
           children: [
-            SizedBox(
-              height: 40.0,
-              child: TextButton(
-                onPressed: () => Navigator.maybePop(context),
-                child: Text(l10n.cancelLabel),
+            Expanded(
+              flex: 6,
+              child: SizedBox(
+                height: 48.0,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    side: const BorderSide(
+                      color: Colors.black,
+                    ),
+                  ),
+                  onPressed: () => Navigator.maybePop(context),
+                  child: Text(
+                    l10n.cancelLabel.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
             ),
             const Spacer(),
-            SizedBox(
-              height: 40.0,
-              child: FutureButton(
-                onTap: () async {
-                  CroppableImagePageAnimator.of(context)
-                      ?.setHeroesEnabled(true);
+            Expanded(
+              flex: 6,
+              child: SizedBox(
+                height: 48.0,
+                child: FutureButton(
+                  onTap: () async {
+                    CroppableImagePageAnimator.of(context)
+                        ?.setHeroesEnabled(true);
 
-                  final result = await controller.crop();
+                    final result = await controller.crop();
 
-                  if (context.mounted && shouldPopAfterCrop) {
-                    Navigator.of(context).pop(result);
-                  }
-                },
-                builder: (context, onTap) => FilledButton(
-                  onPressed: onTap,
-                  child: Text(l10n.saveLabel),
+                    if (context.mounted && shouldPopAfterCrop) {
+                      Navigator.of(context).pop(result);
+                    }
+                  },
+                  builder: (context, onTap) => FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: onTap,
+                    child: Text(
+                      l10n.saveLabel.toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
