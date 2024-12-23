@@ -11,6 +11,8 @@ class MaterialImageCropperPage extends StatelessWidget {
     this.heroTag,
     this.themeData,
     this.isDialog = false,
+    this.isMobile = true,
+    this.getConstraints,
   });
 
   final CroppableImageController controller;
@@ -18,7 +20,10 @@ class MaterialImageCropperPage extends StatelessWidget {
   final Object? heroTag;
   final bool shouldPopAfterCrop;
   final ThemeData? themeData;
+
+  final bool isMobile;
   final bool isDialog;
+  final CropSectionConstraints? getConstraints;
 
   @override
   Widget build(BuildContext context) {
@@ -72,63 +77,156 @@ class MaterialImageCropperPage extends StatelessWidget {
                     ),
                 ],
               ),
-              body: SafeArea(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: RepaintBoundary(
-                        child: Padding(
-                          padding: const EdgeInsets.all(48.0),
-                          child: AnimatedCroppableImageViewport(
-                            controller: controller,
-                            gesturePadding: gesturePadding,
-                            overlayOpacityAnimation: overlayOpacityAnimation,
-                            heroTag: heroTag,
-                            cropHandlesBuilder: (context) =>
-                                MaterialImageCropperHandles(
-                              controller: controller,
-                              gesturePadding: gesturePadding,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    MaterialImageCropperToolbar(
-                      controller: controller,
-                    ),
-                    MaterialImageCropperBottomAppBar(
-                      controller: controller,
-                      shouldPopAfterCrop: shouldPopAfterCrop,
-                    ),
-
-                    // RepaintBoundary(
-                    //   child: AnimatedBuilder(
-                    //     animation: overlayOpacityAnimation,
-                    //     builder: (context, _) => Opacity(
-                    //       opacity: overlayOpacityAnimation.value,
-                    //       child: MaterialImageCropperToolbar(
-                    //         controller: controller,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // AnimatedBuilder(
-                    //   animation: overlayOpacityAnimation,
-                    //   builder: (context, _) => Opacity(
-                    //     opacity: overlayOpacityAnimation.value,
-                    //     child: MaterialImageCropperBottomAppBar(
-                    //       controller: controller,
-                    //       shouldPopAfterCrop: shouldPopAfterCrop,
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
+              body: _buildBody(context, overlayOpacityAnimation),
             );
           },
         ),
       ),
     );
   }
+
+  SafeArea _buildBody(
+    BuildContext context,
+    Animation<double> overlayOpacityAnimation,
+  ) =>
+      SafeArea(
+        child: isMobile
+            ? _buildMobileBody(overlayOpacityAnimation)
+            : _buildDesktopBody(context, overlayOpacityAnimation),
+      );
+
+  Column _buildMobileBody(Animation<double> overlayOpacityAnimation) => Column(
+        children: [
+          Expanded(
+            child: LayoutBuilder(builder: (context, constraints) {
+              if (getConstraints != null) {
+                getConstraints!(constraints);
+              }
+              return Column(
+                children: [
+                  Expanded(
+                    child: _buildEditorWidget(overlayOpacityAnimation),
+                  ),
+                  MaterialImageCropperToolbar(
+                    controller: controller,
+                  ),
+                ],
+              );
+            }),
+          ),
+          MaterialImageCropperBottomAppBar(
+            controller: controller,
+            shouldPopAfterCrop: shouldPopAfterCrop,
+          ),
+        ],
+      );
+
+  Column _buildDesktopBody(
+    BuildContext context,
+    Animation<double> overlayOpacityAnimation,
+  ) {
+    final l10n = CroppyLocalizations.of(context)!;
+    return Column(
+      children: [
+        Expanded(
+          child: LayoutBuilder(builder: (context, constraints) {
+            if (getConstraints != null) {
+              getConstraints!(constraints);
+            }
+            return _buildEditorWidget(overlayOpacityAnimation);
+          }),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          decoration: const BoxDecoration(color: Colors.white),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: SizedBox(
+                  height: 48.0,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      side: const BorderSide(
+                        color: Colors.black,
+                      ),
+                    ),
+                    onPressed: () => Navigator.maybePop(context),
+                    child: Text(
+                      l10n.cancelLabel.toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Expanded(
+                flex: 3,
+                child: MaterialImageCropperToolbar(
+                  controller: controller,
+                ),
+              ),
+              const Spacer(),
+              Expanded(
+                flex: 2,
+                child: SizedBox(
+                  height: 48.0,
+                  child: FutureButton(
+                    onTap: () async {
+                      CroppableImagePageAnimator.of(context)
+                          ?.setHeroesEnabled(true);
+
+                      final result = await controller.crop();
+
+                      if (context.mounted && shouldPopAfterCrop) {
+                        Navigator.of(context).pop(result);
+                      }
+                    },
+                    builder: (context, onTap) => FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: onTap,
+                      child: Text(
+                        l10n.saveLabel.toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  RepaintBoundary _buildEditorWidget(
+    Animation<double> overlayOpacityAnimation,
+  ) =>
+      RepaintBoundary(
+        child: Padding(
+          padding: const EdgeInsets.all(48.0),
+          child: AnimatedCroppableImageViewport(
+            controller: controller,
+            gesturePadding: gesturePadding,
+            overlayOpacityAnimation: overlayOpacityAnimation,
+            heroTag: heroTag,
+            cropHandlesBuilder: (context) => MaterialImageCropperHandles(
+              controller: controller,
+              gesturePadding: gesturePadding,
+            ),
+          ),
+        ),
+      );
 }

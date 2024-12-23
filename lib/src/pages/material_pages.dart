@@ -51,8 +51,10 @@ Future<CropImageResult?> showMaterialImageCropper(
   Object? heroTag,
   bool shouldPopAfterCrop = true,
   Locale? locale,
-  bool isDialog = false,
   ThemeData? themeData,
+  bool isDialog = false,
+  bool isMobile = true,
+  CropSectionConstraints? getConstraints,
 }) async {
   late final CroppableImageData _initialData;
 
@@ -81,6 +83,8 @@ Future<CropImageResult?> showMaterialImageCropper(
           shouldPopAfterCrop: shouldPopAfterCrop,
           themeData: themeData,
           isDialog: isDialog,
+          isMobile: isMobile,
+          getConstraints: getConstraints,
         ),
       ),
     );
@@ -96,3 +100,5 @@ Future<CropImageResult?> showMaterialImageCropper(
 
   return null;
 }
+
+typedef CropSectionConstraints = void Function(BoxConstraints constraints);
