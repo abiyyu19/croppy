@@ -23,16 +23,28 @@ class FutureButton extends StatefulWidget {
 
 class _FutureButtonState extends State<FutureButton> {
   bool _isWaiting = false;
+  bool _isMounted = true;
+
+  @override
+  void dispose() {
+    _isMounted = false;
+    super.dispose();
+  }
 
   Future<void> _execute() async {
+    if (!mounted) return;
+    
     setState(() => _isWaiting = true);
 
     try {
       await widget.onTap();
     } catch (e) {
+      if (_isMounted) {
+        setState(() => _isWaiting = false);
+      }
       rethrow;
     } finally {
-      if (context.mounted) {
+      if (_isMounted) {
         setState(() => _isWaiting = false);
       }
     }
