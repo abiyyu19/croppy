@@ -52,9 +52,8 @@ Future<CropImageResult?> showMaterialImageCropper(
   bool shouldPopAfterCrop = true,
   Locale? locale,
   ThemeData? themeData,
-  bool isDialog = false,
+  required ValueNotifier<int> percentageNotifier,
   bool isMobile = true,
-  CropSectionConstraints? getConstraints,
 }) async {
   late final CroppableImageData _initialData;
 
@@ -82,9 +81,8 @@ Future<CropImageResult?> showMaterialImageCropper(
           controller: controller,
           shouldPopAfterCrop: shouldPopAfterCrop,
           themeData: themeData,
-          isDialog: isDialog,
+          percentageNotifier: percentageNotifier,
           isMobile: isMobile,
-          getConstraints: getConstraints,
         ),
       ),
     );

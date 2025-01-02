@@ -10,9 +10,8 @@ class MaterialImageCropperPage extends StatelessWidget {
     this.gesturePadding = 16.0,
     this.heroTag,
     this.themeData,
-    this.isDialog = false,
+    required this.percentageNotifier,
     this.isMobile = true,
-    this.getConstraints,
   });
 
   final CroppableImageController controller;
@@ -21,9 +20,8 @@ class MaterialImageCropperPage extends StatelessWidget {
   final bool shouldPopAfterCrop;
   final ThemeData? themeData;
 
+  final ValueNotifier<int> percentageNotifier;
   final bool isMobile;
-  final bool isDialog;
-  final CropSectionConstraints? getConstraints;
 
   @override
   Widget build(BuildContext context) {
@@ -56,26 +54,26 @@ class MaterialImageCropperPage extends StatelessWidget {
                   ),
                 ),
                 automaticallyImplyLeading: false,
-                centerTitle: isDialog ? true : false,
-                actions: [
-                  if (isDialog)
-                    InkWell(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        margin: const EdgeInsets.only(right: 24),
-                        decoration: const BoxDecoration(
-                          color: Colors.grey,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ),
-                    ),
-                ],
+                // centerTitle: isDialog ? true : false,
+                // actions: [
+                //   if (isDialog)
+                //     InkWell(
+                //       onTap: () => Navigator.pop(context),
+                //       child: Container(
+                //         padding: const EdgeInsets.all(2),
+                //         margin: const EdgeInsets.only(right: 24),
+                //         decoration: const BoxDecoration(
+                //           color: Colors.grey,
+                //           shape: BoxShape.circle,
+                //         ),
+                //         child: const Icon(
+                //           Icons.close,
+                //           color: Colors.white,
+                //           size: 16,
+                //         ),
+                //       ),
+                //     ),
+                // ],
               ),
               body: _buildBody(context, overlayOpacityAnimation),
             );
@@ -98,25 +96,27 @@ class MaterialImageCropperPage extends StatelessWidget {
   Column _buildMobileBody(Animation<double> overlayOpacityAnimation) => Column(
         children: [
           Expanded(
-            child: LayoutBuilder(builder: (context, constraints) {
-              if (getConstraints != null) {
-                getConstraints!(constraints);
-              }
-              return Column(
-                children: [
-                  Expanded(
-                    child: _buildEditorWidget(overlayOpacityAnimation),
-                  ),
-                  MaterialImageCropperToolbar(
-                    controller: controller,
-                  ),
-                ],
-              );
-            }),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Column(
+                  children: [
+                    Expanded(
+                      child: _buildEditorWidget(overlayOpacityAnimation),
+                    ),
+                    MaterialImageCropperToolbar(
+                      controller: controller,
+                    ),
+                  ],
+                ),
+                _buildLoadingWidget(),
+              ],
+            ),
           ),
           MaterialImageCropperBottomAppBar(
             controller: controller,
             shouldPopAfterCrop: shouldPopAfterCrop,
+            percentageNotifier: percentageNotifier,
           ),
         ],
       );
@@ -129,12 +129,12 @@ class MaterialImageCropperPage extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: LayoutBuilder(builder: (context, constraints) {
-            if (getConstraints != null) {
-              getConstraints!(constraints);
-            }
-            return _buildEditorWidget(overlayOpacityAnimation);
-          }),
+          child: Stack(
+            children: [
+              _buildEditorWidget(overlayOpacityAnimation),
+              _buildLoadingWidget(),
+            ],
+          ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -183,7 +183,13 @@ class MaterialImageCropperPage extends StatelessWidget {
 
                       final result = await controller.crop();
 
-                      if (context.mounted && shouldPopAfterCrop) {
+                      final bool isPercentageValid =
+                          percentageNotifier.value == 0 ||
+                              percentageNotifier.value == 100;
+
+                      if (context.mounted &&
+                          shouldPopAfterCrop &&
+                          isPercentageValid) {
                         Navigator.of(context).pop(result);
                       }
                     },
@@ -229,4 +235,48 @@ class MaterialImageCropperPage extends StatelessWidget {
           ),
         ),
       );
+
+  Widget _buildLoadingWidget() => ValueListenableBuilder<int>(
+      valueListenable: percentageNotifier,
+      builder: (
+        final BuildContext context,
+        final int value,
+        final Widget? child,
+      ) {
+        if (value == 0) {
+          return const SizedBox.shrink();
+        }
+
+        return DecoratedBox(
+          decoration: const BoxDecoration(
+            color: Colors.black54,
+          ),
+          child: Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.8),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Text(
+                  '$value%',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    shadows: <Shadow>[
+                      Shadow(blurRadius: 2, offset: Offset(1, 1)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      });
 }

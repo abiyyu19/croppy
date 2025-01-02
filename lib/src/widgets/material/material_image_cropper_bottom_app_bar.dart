@@ -7,10 +7,12 @@ class MaterialImageCropperBottomAppBar extends StatelessWidget {
     super.key,
     required this.controller,
     required this.shouldPopAfterCrop,
+    required this.percentageNotifier,
   });
 
   final CroppableImageController controller;
   final bool shouldPopAfterCrop;
+  final ValueNotifier<int> percentageNotifier;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +71,13 @@ class MaterialImageCropperBottomAppBar extends StatelessWidget {
 
                     final result = await controller.crop();
 
-                    if (context.mounted && shouldPopAfterCrop) {
+                    final bool isPercentageValid =
+                        percentageNotifier.value == 0 ||
+                            percentageNotifier.value == 100;
+
+                    if (context.mounted &&
+                        shouldPopAfterCrop &&
+                        isPercentageValid) {
                       Navigator.of(context).pop(result);
                     }
                   },
