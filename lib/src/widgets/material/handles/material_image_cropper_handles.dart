@@ -85,13 +85,38 @@ class _MaterialImageCropperCornersPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color;
+    double sh = size.height; // for convenient shortage
+    double sw = size.width; // for convenient shortage
+    double cornerSide = sh * 0.12; // desirable value for corners side
 
-    final path = cropShape.getTransformedPathForSize(size);
+    Paint paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke;
 
-    for (final point in path.toApproximatePolygon().vertices) {
-      canvas.drawCircle(point.offset, 4.0, paint);
-    }
+    Path path = Path()
+      ..moveTo(cornerSide, 0)
+      ..lineTo(0, 0)
+      ..lineTo(0, cornerSide)
+      ..moveTo(0, sh - cornerSide)
+      ..lineTo(0, sh)
+      ..lineTo(cornerSide, sh)
+      ..moveTo(sw - cornerSide, sh)
+      ..lineTo(sw, sh)
+      ..lineTo(sw, sh - cornerSide)
+      ..moveTo(sw, cornerSide)
+      ..lineTo(sw, 0)
+      ..lineTo(sw - cornerSide, 0);
+
+    canvas.drawPath(path, paint);
+
+    // final paint = Paint()..color = color;
+
+    // final path = cropShape.getTransformedPathForSize(size);
+
+    // for (final point in path.toApproximatePolygon().vertices) {
+    //   canvas.drawCircle(point.offset, 4.0, paint);
+    // }
   }
 
   @override
