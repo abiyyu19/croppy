@@ -93,6 +93,10 @@ mixin ResizeTransformation on BaseCroppableImageController {
         break;
     }
 
+    if (newRect.width < 100 || newRect.height < 100) {
+      return data;
+    }
+
     return data.copyWithProperCropShape(
       cropShapeFn: cropShapeFn,
       cropRect: newRect,
