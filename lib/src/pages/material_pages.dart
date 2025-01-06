@@ -53,7 +53,6 @@ Future<CropImageResult?> showMaterialImageCropper(
   Locale? locale,
   ThemeData? themeData,
   required ValueNotifier<int> percentageNotifier,
-  bool isMobile = true,
 }) async {
   late final CroppableImageData _initialData;
 
@@ -82,7 +81,6 @@ Future<CropImageResult?> showMaterialImageCropper(
           shouldPopAfterCrop: shouldPopAfterCrop,
           themeData: themeData,
           percentageNotifier: percentageNotifier,
-          isMobile: isMobile,
         ),
       ),
     );

@@ -11,7 +11,6 @@ class MaterialImageCropperPage extends StatelessWidget {
     this.heroTag,
     this.themeData,
     required this.percentageNotifier,
-    this.isMobile = true,
   });
 
   final CroppableImageController controller;
@@ -21,7 +20,6 @@ class MaterialImageCropperPage extends StatelessWidget {
   final ThemeData? themeData;
 
   final ValueNotifier<int> percentageNotifier;
-  final bool isMobile;
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +84,13 @@ class MaterialImageCropperPage extends StatelessWidget {
   Widget _buildBody(
     BuildContext context,
     Animation<double> overlayOpacityAnimation,
-  ) =>
-      isMobile
-          ? _buildMobileBody(overlayOpacityAnimation)
-          : _buildDesktopBody(context, overlayOpacityAnimation);
+  ) {
+    final isMobile = MediaQuery.sizeOf(context).width < 992; // based on cb-gw
+
+    return isMobile
+        ? _buildMobileBody(overlayOpacityAnimation)
+        : _buildDesktopBody(context, overlayOpacityAnimation);
+  }
 
   Column _buildMobileBody(Animation<double> overlayOpacityAnimation) => Column(
         children: [
