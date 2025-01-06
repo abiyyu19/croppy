@@ -83,15 +83,13 @@ class MaterialImageCropperPage extends StatelessWidget {
     );
   }
 
-  SafeArea _buildBody(
+  Widget _buildBody(
     BuildContext context,
     Animation<double> overlayOpacityAnimation,
   ) =>
-      SafeArea(
-        child: isMobile
-            ? _buildMobileBody(overlayOpacityAnimation)
-            : _buildDesktopBody(context, overlayOpacityAnimation),
-      );
+      isMobile
+          ? _buildMobileBody(overlayOpacityAnimation)
+          : _buildDesktopBody(context, overlayOpacityAnimation);
 
   Column _buildMobileBody(Animation<double> overlayOpacityAnimation) => Column(
         children: [
@@ -121,7 +119,7 @@ class MaterialImageCropperPage extends StatelessWidget {
         ],
       );
 
-  Column _buildDesktopBody(
+  Widget _buildDesktopBody(
     BuildContext context,
     Animation<double> overlayOpacityAnimation,
   ) {
@@ -139,68 +137,24 @@ class MaterialImageCropperPage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           decoration: const BoxDecoration(color: Colors.white),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: SizedBox(
-                  height: 48.0,
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
-                      side: const BorderSide(
-                        color: Colors.black,
-                      ),
-                    ),
-                    onPressed: () => Navigator.maybePop(context),
-                    child: Text(
-                      l10n.cancelLabel.toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Expanded(
-                flex: 3,
-                child: MaterialImageCropperToolbar(
-                  controller: controller,
-                ),
-              ),
-              const Spacer(),
-              Expanded(
-                flex: 2,
-                child: SizedBox(
-                  height: 48.0,
-                  child: FutureButton(
-                    onTap: () async {
-                      CroppableImagePageAnimator.of(context)
-                          ?.setHeroesEnabled(true);
-
-                      final result = await controller.crop();
-
-                      final bool isPercentageValid =
-                          percentageNotifier.value == 0 ||
-                              percentageNotifier.value == 100;
-
-                      if (context.mounted &&
-                          shouldPopAfterCrop &&
-                          isPercentageValid) {
-                        Navigator.of(context).pop(result);
-                      }
-                    },
-                    builder: (context, onTap) => FilledButton(
+          child: SafeArea(
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(
+                    height: 48.0,
+                    child: FilledButton(
                       style: FilledButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        side: const BorderSide(
+                          color: Colors.black,
+                        ),
                       ),
-                      onPressed: onTap,
+                      onPressed: () => Navigator.maybePop(context),
                       child: Text(
-                        l10n.saveLabel.toUpperCase(),
+                        l10n.cancelLabel.toUpperCase(),
                         style: const TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.w600,
@@ -209,8 +163,55 @@ class MaterialImageCropperPage extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-            ],
+                const Spacer(),
+                Expanded(
+                  flex: 3,
+                  child: MaterialImageCropperToolbar(
+                    controller: controller,
+                  ),
+                ),
+                const Spacer(),
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(
+                    height: 48.0,
+                    child: FutureButton(
+                      onTap: () async {
+                        CroppableImagePageAnimator.of(context)
+                            ?.setHeroesEnabled(true);
+
+                        final result = await controller.crop();
+
+                        final bool isPercentageValid =
+                            percentageNotifier.value == 0 ||
+                                percentageNotifier.value == 100;
+
+                        if (context.mounted &&
+                            shouldPopAfterCrop &&
+                            isPercentageValid) {
+                          Navigator.of(context).pop(result);
+                        }
+                      },
+                      builder: (context, onTap) => FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: onTap,
+                        child: Text(
+                          l10n.saveLabel.toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
